@@ -23,6 +23,7 @@ import { obj } from '../data/products';
 import Navbar from './components/Navbar';
 import HeartButton from './components/HeartButton';
 import { addToCart } from '../redux/slices/cartSlice';
+import { trackGTMEvent } from '../utils/gtmUtils';
 const ProductContainer = styled(Container)(({ theme }) => ({
   display: 'flex',
   flexDirection: 'row',
@@ -44,7 +45,7 @@ const ImageSection = styled(Box)(({ theme }) => ({
 }));
 const MainImage = styled('img')(({ theme }) => ({
   width: '60%',
-  maxWidth: 300, 
+  maxWidth: 300,
   height: 'auto',
   objectFit: 'contain',
   marginBottom: theme.spacing(2),
@@ -58,7 +59,7 @@ const ThumbnailsContainer = styled(Box)(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
   width: '60%',
-  maxWidth: 300, 
+  maxWidth: 300,
   position: 'relative',
   margin: '0 auto',
   [theme.breakpoints.down('sm')]: {
@@ -215,6 +216,19 @@ export default function ProductPage() {
       setSwname(product.swatches[swatchIdx].swatchName);
     }
   }, [product, swatchIdx]);
+
+  useEffect(() => {
+    if (product) {
+      trackGTMEvent('view_item', {
+        method: 'Product Page',
+        user_type: 'guest',
+        item_id: product.productID,
+        item_name: product.productName,
+        price: product.productPrice,
+        item_variant: product.swatches ? product.swatches[swatchIdx].swatchName : ''
+      });
+    }
+  }, [product, swatchIdx]);
   const chooseSuggest = idx => {
     navigate(`/products?id=${idx}`);
   };
@@ -259,16 +273,28 @@ export default function ProductPage() {
   };
   const handleAddToCart = () => {
     if (product) {
+      const item = {
+        id: index,
+        name: product.productName,
+        price: product.productPrice,
+        image: images[0],
+        variant: swname
+      };
+
       dispatch(addToCart({
-        item: {
-          id: index,
-          name: product.productName,
-          price: product.productPrice,
-          image: images[0],
-          variant: swname
-        },
+        item,
         quantity: qty
       }));
+
+      trackGTMEvent('add_to_cart', {
+        method: 'Buy Button',
+        user_type: 'guest',
+        item_id: item.id,
+        item_name: item.name,
+        price: item.price,
+        quantity: qty,
+        item_variant: item.variant || ''
+      });
     }
   };
   if (!product) {

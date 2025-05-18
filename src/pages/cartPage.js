@@ -28,6 +28,7 @@ import {
 } from '../redux/slices/cartSlice';
 import { addToWishlistAction } from '../redux/slices/wishlistSlice';
 import { useConfirmDialog } from '../hooks/useConfirmDialog';
+import { trackGTMEvent } from '../utils/gtmUtils';
 
 const CartPage = () => {
   const dispatch = useDispatch();
@@ -45,15 +46,50 @@ const CartPage = () => {
       message: "Are you sure you want to save this item to your wishlist?",
       onConfirm: () => {
         dispatch(addToWishlistAction(index));
+        trackGTMEvent('add_to_wishlist', {
+          method: 'Wishlist Button',
+          user_type: 'guest',
+          item_id: item.productID,
+          item_name: item.name,
+          price: item.price,
+          quantity: 1
+        });
         dispatch(removeFromCart(item));
+        trackGTMEvent('remove_from_cart', {
+          method: 'Remove Button',
+          user_type: 'guest',
+          item_id: item.productID || item.id,
+          item_name: item.name,
+          price: item.price,
+          quantity: item.quantity || 1
+        });
       }
     });
   };
   const handleRemoveFromCart = (item) => {
     dispatch(removeFromCart(item));
+    trackGTMEvent('remove_from_cart', {
+      method: 'Remove Button',
+      user_type: 'guest',
+      item_id: item.productID || item.id,
+      item_name: item.name,
+      price: item.price,
+      quantity: item.quantity || 1
+    });
   };
   const handleCheckout = () => {
-
+    trackGTMEvent('clear_cart', {
+      method: 'Clear Cart',
+      user_type: 'guest',
+      cart_total: cartItems.reduce((sum, item) => sum + item.price * item.quantity, 0),
+      cart_size: cartItems.length,
+      cart_items: cartItems.map(item => ({
+        item_id: item.productID || item.id,
+        item_name: item.name,
+        price: item.price,
+        quantity: item.quantity || 1
+      }))
+    });
     dispatch(clearCart());
   };
   const handleGoBack = () => {

@@ -6,7 +6,6 @@ import userReducer from './slices/userSlice';
 import productsReducer from './slices/productsSlice';
 import { getCookie } from '../utils/cookieUtils';
 import { cookiePersistMiddleware } from './middleware/cookiePersistMiddleware';
-import { gtmMiddleware } from './middleware/gtmMiddleware';
 import { getWishlist } from '../pages/utils/WishlistFunctions';
 
 
@@ -49,8 +48,7 @@ export const store = configureStore({
   preloadedState,
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().prepend(
-      cookiePersistMiddleware.middleware,
-      gtmMiddleware.middleware
+      cookiePersistMiddleware.middleware
     )
 });
 export default store;

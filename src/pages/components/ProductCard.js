@@ -15,7 +15,7 @@ import {
 } from '@mui/material';
 import { addToCart } from '../../redux/slices/cartSlice';
 import Heart from './HeartButton';
-import { store } from '../../redux/store';
+import { trackGTMEvent } from '../../utils/gtmUtils';
 
 const ProductCardStyled = styled(Card)(({ theme }) => ({
   height: '100%',
@@ -98,10 +98,15 @@ export default function ProductCard({ idx, product, setSwatchSel, imgSrc, sel })
       quantity: 1
     }));
 
-  
- 
-
-  
+    trackGTMEvent('add_to_cart', {
+      method: 'Buy Button',
+      user_type: 'guest',
+      item_id: item.id,
+      item_name: item.name,
+      price: item.price,
+      quantity: 1,
+      item_variant: item.variant || ''
+    });
   };
   return (
     <ProductCardStyled elevation={1}>
@@ -113,11 +118,25 @@ export default function ProductCard({ idx, product, setSwatchSel, imgSrc, sel })
           component={Link}
           to={`/products?id=${idx}`}
           aria-label={`View details of ${product.productName}`}
-       
+          onClick={() => trackGTMEvent('select_item', {
+            method: 'Product Click',
+            user_type: 'guest',
+            item_id: product.productID || idx,
+            item_name: product.productName,
+            price: product.productPrice,
+            item_variant: product.swatches ? product.swatches[sel].swatchName : ''
+          })}
           onKeyDown={(e) => {
             if (e.key === 'Enter') {
               e.preventDefault();
-         
+              trackGTMEvent('select_item', {
+                method: 'Product Click',
+                user_type: 'guest',
+                item_id: product.productID || idx,
+                item_name: product.productName,
+                price: product.productPrice,
+                item_variant: product.swatches ? product.swatches[sel].swatchName : ''
+              });
               window.location.href = `/products?id=${idx}`;
             }
           }}

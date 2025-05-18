@@ -1,11 +1,8 @@
 
-export const initDataLayer = () => {
+export const trackGTMEvent = (eventName, data = {}) => {
   window.dataLayer = window.dataLayer || [];
+  window.dataLayer.push({
+    event: eventName,
+    ...data
+  });
 };
-
-
-export const pushToDataLayer = (event) => {
-  initDataLayer();
-  window.dataLayer.push(event);
-};
-

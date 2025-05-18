@@ -31,6 +31,7 @@ import { loginSuccess } from '../redux/slices/userSlice';
 import { addToCart } from '../redux/slices/cartSlice';
 import { addToWishlistAction } from '../redux/slices/wishlistSlice';
 import Navbar from './components/Navbar';
+import { trackGTMEvent } from '../utils/gtmUtils';
 const PageContainer = styled(Box)(({ theme }) => ({
   minHeight: '100vh',
   display: 'flex',
@@ -167,6 +168,14 @@ const Login = () => {
       if (result.success) {
         const userData = result.user;
         dispatch(loginSuccess(userData));
+
+        trackGTMEvent('login', {
+          method: 'Login Form',
+          user_type: 'registered',
+          user_id: userData.email,
+          user_name: userData.name
+        });
+
         if (userData.cartitems && userData.cartitems.length > 0) {
           userData.cartitems.forEach(item => {
             dispatch(addToCart({ item, quantity: item.quantity || 1 }));
