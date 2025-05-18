@@ -17,6 +17,7 @@ import { Search as SearchIcon } from '@mui/icons-material';
 import { obj } from '../../data/products';
 import { debounce } from '../utils/Functions';
 import { setSearchQuery } from '../../redux/slices/productsSlice';
+import { trackSearch } from '../../utils/customEvents';
 const SearchContainer = styled(Box)(({ theme }) => ({
   position: 'relative',
   width: '100%',
@@ -65,6 +66,8 @@ export default function SearchBar({ chooseSuggest }) {
       setSuggest(filtered);
       setShowSuggest(filtered.length > 0);
       setHighlightedIndex(-1);
+
+      trackSearch(val, filtered.length);
     }, 300)
   ).current;
   const handleSearchKey = (e) => {

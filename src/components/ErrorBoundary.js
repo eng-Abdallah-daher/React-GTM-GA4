@@ -1,6 +1,7 @@
 import React from 'react';
 import { Box, Typography, Button, Container, Paper } from '@mui/material';
 import { ErrorOutline } from '@mui/icons-material';
+import { trackJsError } from '../utils/customEvents';
 class ErrorBoundary extends React.Component {
   constructor(props) {
     super(props);
@@ -14,7 +15,11 @@ class ErrorBoundary extends React.Component {
       error: error,
       errorInfo: errorInfo
     });
-    console.error('Error caught by ErrorBoundary:', error, errorInfo);
+
+    trackJsError(
+      error.message,
+      errorInfo.componentStack.split('\n')[1].trim()
+    );
   }
   render() {
     if (this.state.hasError) {

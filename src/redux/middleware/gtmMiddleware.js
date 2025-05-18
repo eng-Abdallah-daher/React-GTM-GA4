@@ -33,7 +33,9 @@ gtmMiddleware.startListening({
     const state = listenerApi.getState();
     const updatedCart = [...state.cart.items, { ...item, quantity }];
 
-
+console.log(
+  "aaa"
+)
     window.dataLayer.push({
       event: 'add_to_cart',
       method: 'Buy Button',
@@ -92,7 +94,7 @@ gtmMiddleware.startListening({
         price: removedItem.price,
         quantity: removedItem.quantity,
         item_variant: removedItem.swatch || '',
-        item_category: removedItem.category || ''
+        
       });
     }
   }
@@ -121,7 +123,7 @@ gtmMiddleware.startListening({
           price: item.price,
           quantity: newQuantity - oldQuantity,
           item_variant: item.swatch || '',
-          item_category: item.category || ''
+          
         });
       } else if (newQuantity < oldQuantity) {
 
@@ -135,7 +137,7 @@ gtmMiddleware.startListening({
           price: item.price,
           quantity: oldQuantity - newQuantity,
           item_variant: item.swatch || '',
-          item_category: item.category || ''
+         
         });
       }
     }
@@ -177,7 +179,7 @@ gtmMiddleware.startListening({
           item_name: item.productName,
           price: item.productPrice,
           quantity: 1,
-          item_category: item.category || ''
+        
         });
       }
     } catch (e) {
